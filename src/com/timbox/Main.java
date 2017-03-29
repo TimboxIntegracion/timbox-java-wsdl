@@ -1,8 +1,5 @@
 package com.timbox;
 import WashOut.*;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
@@ -26,7 +23,7 @@ public class Main {
 			ServiceLocator service = new ServiceLocator();
 			Timbrado_port timbrado = service.gettimbrado_port();
 			Timbrar_cfdi_result resultado = timbrado.timbrar_cfdi(usuario, contrasena, xmlBase64);
-			// Factura timbrada
+			// Comprobante timbrada
 			String facturaTimbrada = resultado.getXml();
 			System.out.println("Comprobante timbrado: \n");
 			System.out.println(facturaTimbrada);
@@ -39,19 +36,19 @@ public class Main {
 		//
         // Parametros para el servicio
         String rfcEmisorCancelacion = "AAA010101AAA";
-        String[] uuidsCancelacion = { "E28DBCF2-F852-4B2F-8198-CD8383891EB0" };
+        // Los uuids a cancelar puede ser uno mas.
+        String[] uuidsCancelacion = { "E28DBCF2-F852-4B2F-8198-CD8383891EB0", "3CFF7200-0DE5-4BEE-AC22-AA2A49052FBC", "51408B33-FE29-47DA-9517-FBF420240FD3" };
 		byte[] pfx = Files.readAllBytes(Paths.get("archivoPfx.pfx"));
         String pfxContrasena = "12345678a";
         // Conversion del PFX a base64
         String pfxBase64  = Base64.getEncoder().encodeToString(pfx);
 
         try {
-        	// Servicio de timbrado
+        	// Servicio de cancelacion
 			ServiceLocator service = new ServiceLocator();
 			Timbrado_port timbrado = service.gettimbrado_port();
-			//(java.lang.String username, java.lang.String password, java.lang.String rfcemisor, java.lang.String[] uuids, java.lang.String pfxbase64, java.lang.String pfxpassword)
 			Cancelar_cfdi_result resultado = timbrado.cancelar_cfdi(usuario, contrasena, rfcEmisorCancelacion, uuidsCancelacion, pfxBase64, pfxContrasena);
-			// Factura timbrada
+			// Comprabantes cancelados
 			String facturaCancelada = resultado.getComprobantes_cancelados();
 			System.out.println("Comprabantes cancelados: \n");
 			System.out.println(facturaCancelada);
