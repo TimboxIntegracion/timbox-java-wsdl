@@ -14,62 +14,81 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 ```
 
-También se requiere importar la libreria:
+Para desarrollar el ejemplo se recomienda usar el IDE [Eclipse](https://www.eclipse.org/downloads/)
 
-```
-import javax.xml.soap.*;
-```
+## Creación del cliente para el servicio
+Para poder utilizar el servicio se requiere crear un cliente, se genera de la siguiente forma:
 
-##Timbrar CFDI
+- Lo primero que debemos hacer es crear un nuevo archivo.
+- Click derecho sobre el proyecto > New > Other.
+![imagen 1](http://i.imgur.com/JwmvmAf.png)
+
+- Extender el folder Web Services y seleccionar Web Service Client.
+![imagen 1](http://i.imgur.com/dB2cBHg.png)
+
+- En el input de service definition pondremos el url del servicio que estemos utilizando ya sea staging o producción y presionamos el boton Finish.
+  - [Timbox Pruebas (https://staging.ws.timbox.com.mx/timbrado/wsdl)](https://staging.ws.timbox.com.mx/timbrado/wsdl)
+  - [Timbox Producción (https://sistema.timbox.com.mx/timbrado/wsdl)](https://sistema.timbox.com.mx/timbrado/wsdl)
+
+![imagen 1](http://i.imgur.com/P9UWURK.png)
+
+- De esta tendremos generado nuestro cliente, solo nos faltara incluirlo en las referencias de nuestra aplicación con el siguiente código.
+```
+import WashOut.*;
+```
+![imagen 1](http://i.imgur.com/LkuxXli.png)
+
+## Timbrar CFDI
 Para hacer una petición de timbrado de un CFDI, deberá enviar las credenciales asignadas, asi como el xml que desea timbrar convertido a una cadena en base64:
-
-En el proyecto existe una clase Timbrado.java, la cual facilita la creacion de timbrado, solo es necesario agragarla al proyecto y crear un objeto.
 ```
-//Timbrar Factura
-// Parametros para el servicio
-String usuarioTimbrado = "usuario_prueba";
-String contrasenaTimbrado = "contrasena_prueba";
-String documentoTimbrado = "xml";
+// Timbrar Factura
+
+// Parametros para el servicio		
+String usuario = "AAA010101000";
+String contrasena = "h6584D56fVdBbSmmnB";
+byte[] archivoXml = Files.readAllBytes(Paths.get("archivoXml.xml"));
+    String xmlBase64 = Base64.getEncoder().encodeToString(archivoXml);
 
 try {
-    // Creación del objeto Timbrado
-    Timbrado timbrado = new Timbrado(usuarioTimbrado, contrasenaTimbrado, documentoTimbrado);
-    //Ejecución del servicio
-    SOAPMessage soapResponse = timbrado.Timbrar();
-    // Imprime la respuesta
-    System.out.print("Response SOAP Message:");
-    soapResponse.writeTo(System.out);
+  // Servicio de timbrado
+  ServiceLocator service = new ServiceLocator();
+  Timbrado_port timbrado = service.gettimbrado_port();
+  Timbrar_cfdi_result resultado = timbrado.timbrar_cfdi(usuario, contrasena, xmlBase64);
+  // Comprobante timbrada
+  String facturaTimbrada = resultado.getXml();
+  System.out.println("Comprobante timbrado: \n");
+  System.out.println(facturaTimbrada);
 } catch (Exception exception) {
-    throw exception;
+  throw exception;
 }
 ```
 
-##Cancelar CFDI
+## Cancelar CFDI
 Para la cancelación son necesarias las credenciales asignadas, RFC del emisor, un arreglo de UUIDs, el archivo PFX convertido a cadena en base64 y el password del archivo PFX:
-
-En el proyecto existe una clase Cancelacion.java, la cual facilita la creacion de timbrado, solo es necesario agragarla al proyecto y crear un objeto.
 ```
-//Cancelar Factura
+// Cancelar Factura
+
 // Parametros para el servicio
-String usuarioCancelacion = "usuario_prueba";
-String contrasenaCancelacion = "contrasena_prueba";
-String rfcEmisorCancelacion = "RFCPRUEBA";
-String[] uuidsCancelacion = { "UUID1", "UUID2", "UUID3" };
-String pfxCancelacion = "valor_PFX";
-String pfxContrasenaCancelacion = "contrasena_prueba";
-// Conversión del PFX a base64
-byte[] bytes = pfxCancelacion.getBytes(StandardCharsets.UTF_8);
-String encodedPfxCancelacion  = Base64.getEncoder().encodeToString(bytes);
+String usuario = "AAA010101000";
+String contrasena = "h6584D56fVdBbSmmnB";
+String rfcEmisorCancelacion = "AAA010101AAA";
+// Los uuids a cancelar puede ser uno mas.
+String[] uuidsCancelacion = { "E28DBCF2-F852-4B2F-8198-CD8383891EB0", "3CFF7200-0DE5-4BEE-AC22-AA2A49052FBC", "51408B33-FE29-47DA-9517-FBF420240FD3" };
+byte[] pfx = Files.readAllBytes(Paths.get("archivoPfx.pfx"));
+String pfxContrasena = "12345678a";
+// Conversion del PFX a base64
+String pfxBase64  = Base64.getEncoder().encodeToString(pfx);
 
 try {
-    // Creación del objeto Cancelación
-    Cancelacion timbrado = new Cancelacion(usuarioCancelacion, contrasenaCancelacion, rfcEmisorCancelacion, uuidsCancelacion, encodedPfxCancelacion, pfxContrasenaCancelacion);
-    //Ejecución del servicio
-    SOAPMessage soapResponse = timbrado.Cancelar();
-    // Imprime la respuesta
-    System.out.print("Response SOAP Message:");
-    soapResponse.writeTo(System.out);
+  // Servicio de cancelacion
+  ServiceLocator service = new ServiceLocator();
+  Timbrado_port timbrado = service.gettimbrado_port();
+  Cancelar_cfdi_result resultado = timbrado.cancelar_cfdi(usuario, contrasena, rfcEmisorCancelacion, uuidsCancelacion, pfxBase64, pfxContrasena);
+  // Comprabantes cancelados
+  String facturaCancelada = resultado.getComprobantes_cancelados();
+  System.out.println("Comprabantes cancelados: \n");
+  System.out.println(facturaCancelada);
 } catch (Exception exception) {
-    throw exception;
+  throw exception;
 }
 ```
