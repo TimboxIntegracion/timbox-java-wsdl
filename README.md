@@ -3,9 +3,9 @@ Ejemplo con la integración al Webservice de Timbox
 
 Se deberá hacer uso de las URL que hacen referencia al WSDL, en cada petición realizada:
 
-- [Timbox Pruebas](https://staging.ws.timbox.com.mx/timbrado/wsdl)
+- [Timbox Pruebas](https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl)
 
-- [Timbox Producción](https://sistema.timbox.com.mx/timbrado/wsdl)
+- [Timbox Producción](https://sistema.timbox.com.mx/timbrado_cfdi33/wsdl)
 
 Para integrar el Webservice al proyecto se requiere hacer uso del modulo Base64:
 
@@ -27,8 +27,9 @@ Para poder utilizar el servicio se requiere crear un cliente, se genera de la si
 ![imagen 1](http://i.imgur.com/dB2cBHg.png)
 
 - En el input de service definition pondremos el url del servicio que estemos utilizando ya sea staging o producción y presionamos el boton Finish.
-  - [Timbox Pruebas (https://staging.ws.timbox.com.mx/timbrado/wsdl)](https://staging.ws.timbox.com.mx/timbrado/wsdl)
-  - [Timbox Producción (https://sistema.timbox.com.mx/timbrado/wsdl)](https://sistema.timbox.com.mx/timbrado/wsdl)
+- [Timbox Pruebas](https://staging.ws.timbox.com.mx/timbrado_cfdi33/wsdl)
+
+- [Timbox Producción](https://sistema.timbox.com.mx/timbrado_cfdi33/wsdl)
 
 ![imagen 1](http://i.imgur.com/P9UWURK.png)
 
